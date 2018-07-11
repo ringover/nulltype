@@ -8,6 +8,7 @@ NullType implements the sql.Scanner, json.Unmarshaler and json.Marshaler interfa
  * string
  * int64
  * bool
+ * float64
 
 ## Authors
  * Mickael ROUSSE
