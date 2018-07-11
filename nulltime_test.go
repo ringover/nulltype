@@ -55,6 +55,9 @@ func testUnmarshalJSONWithTimeNotNull(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	if test.Time.Valid == false {
+		t.Fatal(err)
+	}
 	t.Logf("%+v", test)
 }
 
@@ -66,6 +69,9 @@ func testUnmarshalJSONWithTimeNull(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	if test.Time.Valid == true {
+		t.Fatal(err)
+	}
 	t.Logf("%+v", test)
 }
 
@@ -75,6 +81,9 @@ func testScanTimeNull(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	if v.Valid == true {
+		t.Fatal(err)
+	}
 	t.Logf("%+v", v)
 }
 
@@ -82,6 +91,9 @@ func testScanTimeNotNull(t *testing.T) {
 	v := Time{}
 	err := v.Scan("2018-06-05 22:26:45")
 	if err != nil {
+		t.Fatal(err)
+	}
+	if v.Valid == false {
 		t.Fatal(err)
 	}
 	t.Logf("%+v", v)
@@ -105,6 +117,9 @@ func testValueTimeNotNull(t *testing.T) {
 	v := NewTime(time.Now())
 	value, err := v.Value()
 	if err != nil {
+		t.Fatal(err)
+	}
+	if v.Valid == false {
 		t.Fatal(err)
 	}
 	t.Logf("%s", value)

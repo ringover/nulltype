@@ -54,6 +54,9 @@ func testUnmarshalJSONWithStringNotNull(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	if test.Str.Valid == false {
+		t.Fatal(err)
+	}
 	t.Logf("%+v", test)
 }
 
@@ -65,6 +68,9 @@ func testUnmarshalJSONWithStringNull(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	if test.Str.Valid == true {
+		t.Fatal(err)
+	}
 	t.Logf("%+v", test)
 }
 
@@ -74,6 +80,9 @@ func testScanStringNull(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	if v.Valid == true {
+		t.Fatal(err)
+	}
 	t.Logf("%+v", v)
 }
 
@@ -81,6 +90,9 @@ func testScanStringNotNull(t *testing.T) {
 	v := String{}
 	err := v.Scan("testScanStringNotNull")
 	if err != nil {
+		t.Fatal(err)
+	}
+	if v.Valid == false {
 		t.Fatal(err)
 	}
 	t.Logf("%+v", v)
@@ -104,6 +116,9 @@ func testValueStringNotNull(t *testing.T) {
 	v := NewString("testValueStringNotNull")
 	value, err := v.Value()
 	if err != nil {
+		t.Fatal(err)
+	}
+	if v.Valid == false {
 		t.Fatal(err)
 	}
 	t.Logf("%s", value)
