@@ -9,6 +9,7 @@ NullType implements the sql.Scanner, json.Unmarshaler and json.Marshaler interfa
  * int64
  * bool
  * float64
+ * uuid.UUID
 
 ## Authors
  * Mickael ROUSSE
