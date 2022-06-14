@@ -3,7 +3,6 @@ package nulltype
 import (
 	"bytes"
 	"database/sql/driver"
-	"encoding/json"
 	"fmt"
 	"time"
 )

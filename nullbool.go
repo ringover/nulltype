@@ -4,13 +4,16 @@ import (
 	"bytes"
 	"database/sql"
 	"database/sql/driver"
-	"encoding/json"
 	"reflect"
+
+	jsoniter "github.com/json-iterator/go"
 )
 
 /* SQL and JSon null.Bool */
 
 type Bool sql.NullBool
+
+var json = jsoniter.ConfigCompatibleWithStandardLibrary
 
 func NewBool(b bool) Bool {
 	nb := Bool{}
