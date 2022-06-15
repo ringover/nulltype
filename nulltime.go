@@ -69,7 +69,7 @@ func (n Time) MarshalJSON() ([]byte, error) {
 	if n.Valid {
 		return json.Marshal(n.Time)
 	}
-	return nil, nil
+	return json.Marshal(nil)
 }
 
 func parseDateTime(str string, loc *time.Location) (t time.Time, err error) {

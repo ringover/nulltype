@@ -57,7 +57,7 @@ func (nb Bool) MarshalJSON() ([]byte, error) {
 	if nb.Valid {
 		return json.Marshal(nb.Bool)
 	}
-	return nil, nil
+	return json.Marshal(nil)
 }
 
 func (nb *Bool) Scan(value interface{}) error {

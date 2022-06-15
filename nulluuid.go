@@ -59,7 +59,7 @@ func (n UUID) MarshalJSON() ([]byte, error) {
 	if n.Valid {
 		return json.Marshal(n.UUID)
 	}
-	return nil, nil
+	return json.Marshal(nil)
 }
 
 func (n *UUID) Scan(value interface{}) (err error) {

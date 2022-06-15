@@ -55,7 +55,7 @@ func (ns String) MarshalJSON() ([]byte, error) {
 	if ns.Valid {
 		return json.Marshal(ns.String)
 	}
-	return nil, nil
+	return json.Marshal(nil)
 }
 
 func (ns *String) Scan(value interface{}) error {

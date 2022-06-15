@@ -55,7 +55,7 @@ func (ni Int64) MarshalJSON() ([]byte, error) {
 	if ni.Valid {
 		return json.Marshal(ni.Int64)
 	}
-	return nil, nil
+	return json.Marshal(nil)
 }
 
 func (ni *Int64) Scan(value interface{}) error {
