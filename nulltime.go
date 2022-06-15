@@ -5,6 +5,9 @@ import (
 	"database/sql/driver"
 	"fmt"
 	"time"
+	"unsafe"
+
+	jsoniter "github.com/json-iterator/go"
 )
 
 /* SQL and JSon null.Time
@@ -25,6 +28,21 @@ func NewTime(t time.Time) Time {
 	n.Valid = true
 	n.Time = t
 	return n
+}
+
+func (n *Time) Encode(ptr unsafe.Pointer, stream *jsoniter.Stream) {
+	fmt.Println("DEBUG: custom marshal nullFloat")
+
+	val := (*time.Time)(ptr)
+	stream.WriteVal(val)
+}
+
+// IsEmpty detect whether primitive.ObjectID is empty.
+func (n *Time) IsEmpty(ptr unsafe.Pointer) bool {
+	if !n.Valid {
+		return true
+	}
+	return false
 }
 
 func (n *Time) UnmarshalJSON(b []byte) error {
@@ -51,7 +69,7 @@ func (n Time) MarshalJSON() ([]byte, error) {
 	if n.Valid {
 		return json.Marshal(n.Time)
 	}
-	return json.Marshal(nil)
+	return nil, nil
 }
 
 func parseDateTime(str string, loc *time.Location) (t time.Time, err error) {

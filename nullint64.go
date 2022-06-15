@@ -4,7 +4,11 @@ import (
 	"bytes"
 	"database/sql"
 	"database/sql/driver"
+	"fmt"
 	"reflect"
+	"unsafe"
+
+	jsoniter "github.com/json-iterator/go"
 )
 
 /* SQL and JSon null.Int64 */
@@ -16,6 +20,21 @@ func NewInt64(i int64) Int64 {
 	n.Valid = true
 	n.Int64 = i
 	return n
+}
+
+func (ni *Int64) Encode(ptr unsafe.Pointer, stream *jsoniter.Stream) {
+	fmt.Println("DEBUG: custom marshal nullFloat")
+
+	val := (*int64)(ptr)
+	stream.WriteVal(val)
+}
+
+// IsEmpty detect whether primitive.ObjectID is empty.
+func (ni *Int64) IsEmpty(ptr unsafe.Pointer) bool {
+	if !ni.Valid {
+		return true
+	}
+	return false
 }
 
 func (ni *Int64) UnmarshalJSON(b []byte) error {
@@ -36,7 +55,7 @@ func (ni Int64) MarshalJSON() ([]byte, error) {
 	if ni.Valid {
 		return json.Marshal(ni.Int64)
 	}
-	return json.Marshal(nil)
+	return nil, nil
 }
 
 func (ni *Int64) Scan(value interface{}) error {

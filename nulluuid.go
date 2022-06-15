@@ -4,8 +4,10 @@ import (
 	"bytes"
 	"database/sql/driver"
 	"fmt"
+	"unsafe"
 
 	"github.com/google/uuid"
+	jsoniter "github.com/json-iterator/go"
 )
 
 type UUID struct {
@@ -20,6 +22,21 @@ func NewUUID(u uuid.UUID) UUID {
 	n.Valid = true
 	n.UUID = u
 	return n
+}
+
+func (n *UUID) Encode(ptr unsafe.Pointer, stream *jsoniter.Stream) {
+	fmt.Println("DEBUG: custom marshal nullFloat")
+
+	val := (*uuid.UUID)(ptr)
+	stream.WriteVal(val)
+}
+
+// IsEmpty detect whether primitive.ObjectID is empty.
+func (n *UUID) IsEmpty(ptr unsafe.Pointer) bool {
+	if !n.Valid {
+		return true
+	}
+	return false
 }
 
 func (n *UUID) UnmarshalJSON(b []byte) error {
@@ -42,7 +59,7 @@ func (n UUID) MarshalJSON() ([]byte, error) {
 	if n.Valid {
 		return json.Marshal(n.UUID)
 	}
-	return json.Marshal(nil)
+	return nil, nil
 }
 
 func (n *UUID) Scan(value interface{}) (err error) {
