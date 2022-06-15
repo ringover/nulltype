@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"database/sql"
 	"database/sql/driver"
-	"fmt"
 	"reflect"
 	"unsafe"
 
@@ -25,8 +24,6 @@ func NewBool(b bool) Bool {
 }
 
 func (nb *Bool) Encode(ptr unsafe.Pointer, stream *jsoniter.Stream) {
-	fmt.Println("DEBUG: custom marshal nullFloat")
-
 	val := (*bool)(ptr)
 	stream.WriteVal(val)
 }

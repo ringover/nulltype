@@ -31,8 +31,6 @@ func NewTime(t time.Time) Time {
 }
 
 func (n *Time) Encode(ptr unsafe.Pointer, stream *jsoniter.Stream) {
-	fmt.Println("DEBUG: custom marshal nullFloat")
-
 	val := (*time.Time)(ptr)
 	stream.WriteVal(val)
 }

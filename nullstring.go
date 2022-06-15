@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"database/sql"
 	"database/sql/driver"
-	"fmt"
 	"reflect"
 	"unsafe"
 
@@ -23,8 +22,6 @@ func NewString(str string) String {
 }
 
 func (ns *String) Encode(ptr unsafe.Pointer, stream *jsoniter.Stream) {
-	fmt.Println("DEBUG: custom marshal nullFloat")
-
 	val := (*string)(ptr)
 	stream.WriteVal(val)
 }

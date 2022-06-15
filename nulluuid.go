@@ -25,8 +25,6 @@ func NewUUID(u uuid.UUID) UUID {
 }
 
 func (n *UUID) Encode(ptr unsafe.Pointer, stream *jsoniter.Stream) {
-	fmt.Println("DEBUG: custom marshal nullFloat")
-
 	val := (*uuid.UUID)(ptr)
 	stream.WriteVal(val)
 }
