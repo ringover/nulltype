@@ -3,9 +3,11 @@ package nulltype
 import (
 	"bytes"
 	"database/sql/driver"
-	"encoding/json"
 	"fmt"
 	"time"
+	"unsafe"
+
+	jsoniter "github.com/json-iterator/go"
 )
 
 /* SQL and JSon null.Time
@@ -26,6 +28,19 @@ func NewTime(t time.Time) Time {
 	n.Valid = true
 	n.Time = t
 	return n
+}
+
+func (n *Time) Encode(ptr unsafe.Pointer, stream *jsoniter.Stream) {
+	val := (*time.Time)(ptr)
+	stream.WriteVal(val)
+}
+
+// IsEmpty detect whether primitive.ObjectID is empty.
+func (n *Time) IsEmpty(ptr unsafe.Pointer) bool {
+	if !n.Valid {
+		return true
+	}
+	return false
 }
 
 func (n *Time) UnmarshalJSON(b []byte) error {

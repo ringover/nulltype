@@ -4,8 +4,10 @@ import (
 	"bytes"
 	"database/sql"
 	"database/sql/driver"
-	"encoding/json"
 	"reflect"
+	"unsafe"
+
+	jsoniter "github.com/json-iterator/go"
 )
 
 /* SQL and JSon null.String */
@@ -17,6 +19,19 @@ func NewString(str string) String {
 	n.Valid = true
 	n.String = str
 	return n
+}
+
+func (ns *String) Encode(ptr unsafe.Pointer, stream *jsoniter.Stream) {
+	val := (*string)(ptr)
+	stream.WriteVal(val)
+}
+
+// IsEmpty detect whether primitive.ObjectID is empty.
+func (ns *String) IsEmpty(ptr unsafe.Pointer) bool {
+	if !ns.Valid {
+		return true
+	}
+	return false
 }
 
 func (ns *String) UnmarshalJSON(b []byte) error {

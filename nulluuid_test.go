@@ -1,7 +1,6 @@
 package nulltype
 
 import (
-	"encoding/json"
 	"testing"
 
 	"github.com/google/uuid"

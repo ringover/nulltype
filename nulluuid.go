@@ -3,10 +3,11 @@ package nulltype
 import (
 	"bytes"
 	"database/sql/driver"
-	"encoding/json"
 	"fmt"
+	"unsafe"
 
 	"github.com/google/uuid"
+	jsoniter "github.com/json-iterator/go"
 )
 
 type UUID struct {
@@ -21,6 +22,19 @@ func NewUUID(u uuid.UUID) UUID {
 	n.Valid = true
 	n.UUID = u
 	return n
+}
+
+func (n *UUID) Encode(ptr unsafe.Pointer, stream *jsoniter.Stream) {
+	val := (*uuid.UUID)(ptr)
+	stream.WriteVal(val)
+}
+
+// IsEmpty detect whether primitive.ObjectID is empty.
+func (n *UUID) IsEmpty(ptr unsafe.Pointer) bool {
+	if !n.Valid {
+		return true
+	}
+	return false
 }
 
 func (n *UUID) UnmarshalJSON(b []byte) error {
