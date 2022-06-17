@@ -1,4 +1,4 @@
-module github.com/ringover/nulltype
+module github.com/ringover/nulltype/v2
 
 go 1.16
 
