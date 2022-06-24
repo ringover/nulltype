@@ -1,7 +1,11 @@
 package nulltype
 
 import (
+	"reflect"
+	"strings"
 	"testing"
+
+	jsoniter "github.com/json-iterator/go"
 )
 
 func testMarshalJSONWithStringNull(t *testing.T) {
@@ -123,6 +127,31 @@ func testValueStringNotNull(t *testing.T) {
 	t.Logf("%s", value)
 }
 
+func testValueStringNotNullInStruct(t *testing.T) {
+	jsoniter.RegisterTypeEncoder(reflect.TypeOf(String{}).String(), &String{})
+	type tmp struct {
+		Ptr       *String `json:"ptr,omitempty"`
+		Always    String  `json:"always"`
+		OkString  String  `json:"ok_String,omitempty"`
+		NokString String  `json:"nok_String,omitempty"`
+	}
+	value := tmp{}
+	value.Always = NewString("TestString")
+	value.OkString = NewString("AnotherOne")
+	value.NokString.Valid = false
+	value.NokString.String = ""
+	t.Logf("%+v", value)
+	jsoni, err := json.Marshal(value)
+	if err != nil {
+		t.Fatal(err)
+	}
+	str := string(jsoni)
+	if !strings.Contains(str, "nok_String") {
+		t.Failed()
+	}
+	t.Log(str)
+}
+
 func TestNullString(t *testing.T) {
 	t.Run("testMarshalJSONWithStringNull", testMarshalJSONWithStringNull)
 	t.Run("testMarshalJSONWithStringNotNull", testMarshalJSONWithStringNotNull)
@@ -132,4 +161,5 @@ func TestNullString(t *testing.T) {
 	t.Run("testScanStringNotNull", testScanStringNotNull)
 	t.Run("testValueStringNull", testValueStringNull)
 	t.Run("testValueStringNotNull", testValueStringNotNull)
+	t.Run("testValueStringNotNull", testValueStringNotNullInStruct)
 }

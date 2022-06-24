@@ -28,10 +28,25 @@ func (ns *String) Encode(ptr unsafe.Pointer, stream *jsoniter.Stream) {
 
 // IsEmpty detect whether primitive.ObjectID is empty.
 func (ns *String) IsEmpty(ptr unsafe.Pointer) bool {
-	if !ns.Valid {
+	val := (*String)(ptr)
+	if !val.Valid {
 		return true
 	}
 	return false
+}
+
+func (ns *String) UnmarshalCSV(b string) error {
+	var err error
+	ns.String = b
+	return err
+}
+
+// MarshalCSV marshals CSV
+func (ns String) MarshalCSV() (string, error) {
+	if ns.Valid {
+		return ns.String, nil
+	}
+	return "", nil
 }
 
 func (ns *String) UnmarshalJSON(b []byte) error {
