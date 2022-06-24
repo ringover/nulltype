@@ -1,7 +1,11 @@
 package nulltype
 
 import (
+	"reflect"
+	"strings"
 	"testing"
+
+	jsoniter "github.com/json-iterator/go"
 )
 
 func testMarshalJSONWithInt64Null(t *testing.T) {
@@ -123,6 +127,31 @@ func testValueInt64NotNull(t *testing.T) {
 	t.Logf("%d", value)
 }
 
+func testValueInt64NotNullInStruct(t *testing.T) {
+	jsoniter.RegisterTypeEncoder(reflect.TypeOf(Int64{}).String(), &Int64{})
+	type tmp struct {
+		Ptr      *Int64 `json:"ptr,omitempty"`
+		Always   Int64  `json:"always"`
+		OkInt64  Int64  `json:"ok_Int64,omitempty"`
+		NokInt64 Int64  `json:"nok_Int64,omitempty"`
+	}
+	value := tmp{}
+	value.Always = NewInt64(1)
+	value.OkInt64 = NewInt64(2)
+	value.NokInt64.Valid = false
+	value.NokInt64.Int64 = 0
+	t.Logf("%+v", value)
+	jsoni, err := json.Marshal(value)
+	if err != nil {
+		t.Fatal(err)
+	}
+	str := string(jsoni)
+	if !strings.Contains(str, "nok_Int64") {
+		t.Failed()
+	}
+	t.Log(str)
+}
+
 func TestNullInt64(t *testing.T) {
 	t.Run("testMarshalJSONWithInt64Null", testMarshalJSONWithInt64Null)
 	t.Run("testMarshalJSONWithInt64NotNull", testMarshalJSONWithInt64NotNull)
@@ -132,4 +161,5 @@ func TestNullInt64(t *testing.T) {
 	t.Run("testScanInt64NotNull", testScanInt64NotNull)
 	t.Run("testValueInt64Null", testValueInt64Null)
 	t.Run("testValueInt64NotNull", testValueInt64NotNull)
+	t.Run("testValueInt64NotNull", testValueInt64NotNullInStruct)
 }

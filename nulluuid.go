@@ -31,10 +31,25 @@ func (n *UUID) Encode(ptr unsafe.Pointer, stream *jsoniter.Stream) {
 
 // IsEmpty detect whether primitive.ObjectID is empty.
 func (n *UUID) IsEmpty(ptr unsafe.Pointer) bool {
-	if !n.Valid {
+	val := (*UUID)(ptr)
+	if !val.Valid {
 		return true
 	}
 	return false
+}
+
+func (n *UUID) UnmarshalCSV(b string) error {
+	var err error
+	n.UUID, err = uuid.FromBytes([]byte(b))
+	return err
+}
+
+// MarshalCSV marshals CSV
+func (n *UUID) MarshalCSV() (string, error) {
+	if n.Valid {
+		return n.UUID.String(), nil
+	}
+	return "", nil
 }
 
 func (n *UUID) UnmarshalJSON(b []byte) error {

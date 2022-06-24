@@ -1,9 +1,12 @@
 package nulltype
 
 import (
+	"reflect"
+	"strings"
 	"testing"
 
 	"github.com/google/uuid"
+	jsoniter "github.com/json-iterator/go"
 )
 
 func testMarshalJSONWithUUIDNull(t *testing.T) {
@@ -125,6 +128,31 @@ func testValueUUIDNotNull(t *testing.T) {
 	t.Logf("%s", value)
 }
 
+func testValueUUIDNotNullInStruct(t *testing.T) {
+	jsoniter.RegisterTypeEncoder(reflect.TypeOf(UUID{}).String(), &UUID{})
+	type tmp struct {
+		Ptr     *UUID `json:"ptr,omitempty"`
+		Always  UUID  `json:"always"`
+		OkUUID  UUID  `json:"ok_UUID,omitempty"`
+		NokUUID UUID  `json:"nok_UUID,omitempty"`
+	}
+	value := tmp{}
+	value.Always = NewUUID(uuid.New())
+	value.OkUUID = NewUUID(uuid.New())
+	value.NokUUID.Valid = false
+	value.NokUUID.UUID = uuid.New()
+	t.Logf("%+v", value)
+	jsoni, err := json.Marshal(value)
+	if err != nil {
+		t.Fatal(err)
+	}
+	str := string(jsoni)
+	if !strings.Contains(str, "nok_UUID") {
+		t.Failed()
+	}
+	t.Log(str)
+}
+
 func TestNullUUID(t *testing.T) {
 	t.Run("testMarshalJSONWithUUIDNull", testMarshalJSONWithUUIDNull)
 	t.Run("testMarshalJSONWithUUIDNotNull", testMarshalJSONWithUUIDNotNull)
@@ -134,4 +162,5 @@ func TestNullUUID(t *testing.T) {
 	t.Run("testScanUUIDNotNull", testScanUUIDNotNull)
 	t.Run("testValueUUIDNull", testValueUUIDNull)
 	t.Run("testValueUUIDNotNull", testValueUUIDNotNull)
+	t.Run("testValueUUIDNotNull", testValueUUIDNotNullInStruct)
 }

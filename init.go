@@ -6,7 +6,7 @@ import (
 	jsoniter "github.com/json-iterator/go"
 )
 
-func EncoderRegister() {
+func init() {
 	jsoniter.RegisterTypeEncoder(reflect.TypeOf(Bool{}).String(), &Bool{})
 	jsoniter.RegisterTypeEncoder(reflect.TypeOf(Float64{}).String(), &Float64{})
 	jsoniter.RegisterTypeEncoder(reflect.TypeOf(Int64{}).String(), &Int64{})

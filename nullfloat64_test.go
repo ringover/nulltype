@@ -1,7 +1,11 @@
 package nulltype
 
 import (
+	"reflect"
+	"strings"
 	"testing"
+
+	jsoniter "github.com/json-iterator/go"
 )
 
 func testMarshalJSONWithFloat64Null(t *testing.T) {
@@ -123,6 +127,31 @@ func testValueFloat64NotNull(t *testing.T) {
 	t.Logf("%d", value)
 }
 
+func testValueFloat64NotNullInStruct(t *testing.T) {
+	jsoniter.RegisterTypeEncoder(reflect.TypeOf(Float64{}).String(), &Float64{})
+	type tmp struct {
+		Ptr        *Float64 `json:"ptr,omitempty"`
+		Always     Float64  `json:"always"`
+		OkFloat64  Float64  `json:"ok_Float64,omitempty"`
+		NokFloat64 Float64  `json:"nok_Float64,omitempty"`
+	}
+	value := tmp{}
+	value.Always = NewFloat64(1.1)
+	value.OkFloat64 = NewFloat64(2.2)
+	value.NokFloat64.Valid = false
+	value.NokFloat64.Float64 = 0
+	t.Logf("%+v", value)
+	jsoni, err := json.Marshal(value)
+	if err != nil {
+		t.Fatal(err)
+	}
+	str := string(jsoni)
+	if !strings.Contains(str, "nok_Float64") {
+		t.Failed()
+	}
+	t.Log(str)
+}
+
 func TestNullFloat64(t *testing.T) {
 	t.Run("testMarshalJSONWithFloat64Null", testMarshalJSONWithFloat64Null)
 	t.Run("testMarshalJSONWithFloat64NotNull", testMarshalJSONWithFloat64NotNull)
@@ -132,4 +161,5 @@ func TestNullFloat64(t *testing.T) {
 	t.Run("testScanFloat64NotNull", testScanFloat64NotNull)
 	t.Run("testValueFloat64Null", testValueFloat64Null)
 	t.Run("testValueFloat64NotNull", testValueFloat64NotNull)
+	t.Run("testValueFloat64NotNullInStruct", testValueFloat64NotNullInStruct)
 }

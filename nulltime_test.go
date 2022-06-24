@@ -1,8 +1,12 @@
 package nulltype
 
 import (
+	"reflect"
+	"strings"
 	"testing"
 	"time"
+
+	jsoniter "github.com/json-iterator/go"
 )
 
 func testMarshalJSONWithTimeNull(t *testing.T) {
@@ -124,6 +128,31 @@ func testValueTimeNotNull(t *testing.T) {
 	t.Logf("%s", value)
 }
 
+func testValueTimeNotNullInStruct(t *testing.T) {
+	jsoniter.RegisterTypeEncoder(reflect.TypeOf(Time{}).String(), &Time{})
+	type tmp struct {
+		Ptr     *Time `json:"ptr,omitempty"`
+		Always  Time  `json:"always"`
+		OkTime  Time  `json:"ok_Time,omitempty"`
+		NokTime Time  `json:"nok_Time,omitempty"`
+	}
+	value := tmp{}
+	value.Always = NewTime(time.Now())
+	value.OkTime = NewTime(time.Now())
+	value.NokTime.Valid = false
+	value.NokTime.Time = time.Now().UTC().Local()
+	t.Logf("%+v", value)
+	jsoni, err := json.Marshal(value)
+	if err != nil {
+		t.Fatal(err)
+	}
+	str := string(jsoni)
+	if !strings.Contains(str, "nok_Time") {
+		t.Failed()
+	}
+	t.Log(str)
+}
+
 func TestNullTime(t *testing.T) {
 	t.Run("testMarshalJSONWithTimeNull", testMarshalJSONWithTimeNull)
 	t.Run("testMarshalJSONWithTimeNotNull", testMarshalJSONWithTimeNotNull)
@@ -133,4 +162,5 @@ func TestNullTime(t *testing.T) {
 	t.Run("testScanTimeNotNull", testScanTimeNotNull)
 	t.Run("testValueTimeNull", testValueTimeNull)
 	t.Run("testValueTimeNotNull", testValueTimeNotNull)
+	t.Run("testValueTimeNotNull", testValueTimeNotNullInStruct)
 }

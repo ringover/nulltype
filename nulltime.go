@@ -18,15 +18,17 @@ import (
 var timeFormat string = "2006-01-02 15:04:05.999999"
 
 type Time struct {
-	Time time.Time
+	Time     time.Time
+	Timezone string
+	Valid    bool
 	/* Valid is true if Time is not NULL */
-	Valid bool
 }
 
 func NewTime(t time.Time) Time {
 	n := Time{}
 	n.Valid = true
 	n.Time = t
+	n.Timezone = "UTC"
 	return n
 }
 
@@ -37,10 +39,53 @@ func (n *Time) Encode(ptr unsafe.Pointer, stream *jsoniter.Stream) {
 
 // IsEmpty detect whether primitive.ObjectID is empty.
 func (n *Time) IsEmpty(ptr unsafe.Pointer) bool {
-	if !n.Valid {
+	val := (*Time)(ptr)
+	if !val.Valid {
 		return true
 	}
 	return false
+}
+
+func (n Time) String() string {
+	if n.Valid {
+		b, _ := n.Time.MarshalText()
+		return string(b)
+	}
+	return ""
+}
+
+func (n *Time) UnmarshalCSV(b string) error {
+	var t time.Time
+	/* When we received an empty timestamp */
+	if len(b) <= 2 {
+		n.Time = time.Time{}
+		n.Valid = true
+		return nil
+	}
+	n.Timezone = "UTC"
+	if bytes.Compare([]byte(b), []byte("null")) == 0 {
+		n.Valid = false
+		return nil
+	}
+	if err := json.Unmarshal([]byte(b), &t); err != nil {
+		return err
+	}
+	n.Time = t
+	n.Valid = true
+	return nil
+}
+
+// MarshalCSV marshals CSV
+func (n Time) MarshalCSV() (string, error) {
+	if n.Valid {
+		location, err := time.LoadLocation(n.Timezone)
+		if err != nil {
+			location = time.UTC
+		}
+		s := n.Time.In(location).Format("2006-01-02 15:04:05")
+		return s, nil
+	}
+	return "", nil
 }
 
 func (n *Time) UnmarshalJSON(b []byte) error {
@@ -58,14 +103,30 @@ func (n *Time) UnmarshalJSON(b []byte) error {
 	if err := json.Unmarshal(b, &t); err != nil {
 		return err
 	}
+	n.Timezone = "UTC"
 	n.Time = t
 	n.Valid = true
 	return nil
 }
 
+func (n Time) MarshalText() ([]byte, error) {
+	if n.Valid {
+		location, err := time.LoadLocation(n.Timezone)
+		if err != nil {
+			location = time.UTC
+		}
+		return json.Marshal(n.Time.In(location))
+	}
+	return json.Marshal(nil)
+}
+
 func (n Time) MarshalJSON() ([]byte, error) {
 	if n.Valid {
-		return json.Marshal(n.Time)
+		location, err := time.LoadLocation(n.Timezone)
+		if err != nil {
+			location = time.UTC
+		}
+		return json.Marshal(n.Time.In(location))
 	}
 	return json.Marshal(nil)
 }

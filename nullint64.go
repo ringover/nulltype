@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"database/sql/driver"
 	"reflect"
+	"strconv"
 	"unsafe"
 
 	jsoniter "github.com/json-iterator/go"
@@ -28,10 +29,25 @@ func (ni *Int64) Encode(ptr unsafe.Pointer, stream *jsoniter.Stream) {
 
 // IsEmpty detect whether primitive.ObjectID is empty.
 func (ni *Int64) IsEmpty(ptr unsafe.Pointer) bool {
-	if !ni.Valid {
+	val := (*Int64)(ptr)
+	if !val.Valid {
 		return true
 	}
 	return false
+}
+
+func (ni *Int64) UnmarshalCSV(b string) error {
+	var err error
+	ni.Int64, err = strconv.ParseInt(b, 10, 64)
+	return err
+}
+
+// MarshalCSV marshals CSV
+func (ni Int64) MarshalCSV() (string, error) {
+	if ni.Valid {
+		return strconv.FormatInt(ni.Int64, 10), nil
+	}
+	return "", nil
 }
 
 func (ni *Int64) UnmarshalJSON(b []byte) error {
