@@ -40,10 +40,7 @@ func (n *Time) Encode(ptr unsafe.Pointer, stream *jsoniter.Stream) {
 // IsEmpty detect whether primitive.ObjectID is empty.
 func (n *Time) IsEmpty(ptr unsafe.Pointer) bool {
 	val := (*Time)(ptr)
-	if !val.Valid {
-		return true
-	}
-	return false
+	return !val.Valid
 }
 
 func (n Time) String() string {
@@ -63,7 +60,7 @@ func (n *Time) UnmarshalCSV(b string) error {
 		return nil
 	}
 	n.Timezone = "UTC"
-	if bytes.Compare([]byte(b), []byte("null")) == 0 {
+	if bytes.Equal([]byte(b), []byte("null")) {
 		n.Valid = false
 		return nil
 	}
@@ -96,7 +93,7 @@ func (n *Time) UnmarshalJSON(b []byte) error {
 		n.Valid = true
 		return nil
 	}
-	if bytes.Compare(b, []byte("null")) == 0 {
+	if bytes.Equal(b, []byte("null")) {
 		n.Valid = false
 		return nil
 	}
@@ -175,7 +172,7 @@ func (nt *Time) Scan(value interface{}) (err error) {
 	}
 
 	nt.Valid = false
-	return fmt.Errorf("Can't convert %T to time.Time", value)
+	return fmt.Errorf("can't convert %T to time.Time", value)
 }
 
 func (n Time) Value() (driver.Value, error) {

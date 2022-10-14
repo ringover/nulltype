@@ -32,10 +32,7 @@ func (n *UUID) Encode(ptr unsafe.Pointer, stream *jsoniter.Stream) {
 // IsEmpty detect whether primitive.ObjectID is empty.
 func (n *UUID) IsEmpty(ptr unsafe.Pointer) bool {
 	val := (*UUID)(ptr)
-	if !val.Valid {
-		return true
-	}
-	return false
+	return !val.Valid
 }
 
 func (n *UUID) UnmarshalCSV(b string) error {
@@ -54,7 +51,7 @@ func (n *UUID) MarshalCSV() (string, error) {
 
 func (n *UUID) UnmarshalJSON(b []byte) error {
 	var u uuid.UUID
-	if bytes.Compare(b, []byte("null")) == 0 {
+	if bytes.Equal(b, []byte("null")) {
 		n.Valid = false
 		return nil
 	}
@@ -86,8 +83,13 @@ func (n *UUID) Scan(value interface{}) (err error) {
 		n.UUID, n.Valid = v, true
 		return
 	case []byte:
-		n.UUID, err = uuid.ParseBytes(v)
-		n.Valid = true
+		if len(v) == 16 {
+			n.UUID, err = uuid.FromBytes(v)
+			n.Valid = true
+		} else {
+			n.UUID, err = uuid.ParseBytes(v)
+			n.Valid = true
+		}
 		return
 	case string:
 		n.UUID, err = uuid.Parse(v)
@@ -96,12 +98,12 @@ func (n *UUID) Scan(value interface{}) (err error) {
 	}
 
 	n.Valid = false
-	return fmt.Errorf("Can't convert %T to uuid.UUID", value)
+	return fmt.Errorf("can't convert %T to uuid.UUID", value)
 }
 
 func (n UUID) Value() (driver.Value, error) {
 	if !n.Valid {
 		return nil, nil
 	}
-	return n.UUID, nil
+	return n.UUID.MarshalBinary, nil
 }
