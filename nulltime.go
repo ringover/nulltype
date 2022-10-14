@@ -3,9 +3,11 @@ package nulltype
 import (
 	"bytes"
 	"database/sql/driver"
-	"encoding/json"
 	"fmt"
 	"time"
+	"unsafe"
+
+	jsoniter "github.com/json-iterator/go"
 )
 
 /* SQL and JSon null.Time
@@ -16,16 +18,71 @@ import (
 var timeFormat string = "2006-01-02 15:04:05.999999"
 
 type Time struct {
-	Time time.Time
+	Time     time.Time
+	Timezone string
+	Valid    bool
 	/* Valid is true if Time is not NULL */
-	Valid bool
 }
 
 func NewTime(t time.Time) Time {
 	n := Time{}
 	n.Valid = true
 	n.Time = t
+	n.Timezone = "UTC"
 	return n
+}
+
+func (n *Time) Encode(ptr unsafe.Pointer, stream *jsoniter.Stream) {
+	val := (*time.Time)(ptr)
+	stream.WriteVal(val)
+}
+
+// IsEmpty detect whether primitive.ObjectID is empty.
+func (n *Time) IsEmpty(ptr unsafe.Pointer) bool {
+	val := (*Time)(ptr)
+	return !val.Valid
+}
+
+func (n Time) String() string {
+	if n.Valid {
+		b, _ := n.Time.MarshalText()
+		return string(b)
+	}
+	return ""
+}
+
+func (n *Time) UnmarshalCSV(b string) error {
+	var t time.Time
+	/* When we received an empty timestamp */
+	if len(b) <= 2 {
+		n.Time = time.Time{}
+		n.Valid = true
+		return nil
+	}
+	n.Timezone = "UTC"
+	if bytes.Equal([]byte(b), []byte("null")) {
+		n.Valid = false
+		return nil
+	}
+	if err := json.Unmarshal([]byte(b), &t); err != nil {
+		return err
+	}
+	n.Time = t
+	n.Valid = true
+	return nil
+}
+
+// MarshalCSV marshals CSV
+func (n Time) MarshalCSV() (string, error) {
+	if n.Valid {
+		location, err := time.LoadLocation(n.Timezone)
+		if err != nil {
+			location = time.UTC
+		}
+		s := n.Time.In(location).Format("2006-01-02 15:04:05")
+		return s, nil
+	}
+	return "", nil
 }
 
 func (n *Time) UnmarshalJSON(b []byte) error {
@@ -36,21 +93,37 @@ func (n *Time) UnmarshalJSON(b []byte) error {
 		n.Valid = true
 		return nil
 	}
-	if bytes.Compare(b, []byte("null")) == 0 {
+	if bytes.Equal(b, []byte("null")) {
 		n.Valid = false
 		return nil
 	}
 	if err := json.Unmarshal(b, &t); err != nil {
 		return err
 	}
+	n.Timezone = "UTC"
 	n.Time = t
 	n.Valid = true
 	return nil
 }
 
+func (n Time) MarshalText() ([]byte, error) {
+	if n.Valid {
+		location, err := time.LoadLocation(n.Timezone)
+		if err != nil {
+			location = time.UTC
+		}
+		return json.Marshal(n.Time.In(location))
+	}
+	return json.Marshal(nil)
+}
+
 func (n Time) MarshalJSON() ([]byte, error) {
 	if n.Valid {
-		return json.Marshal(n.Time)
+		location, err := time.LoadLocation(n.Timezone)
+		if err != nil {
+			location = time.UTC
+		}
+		return json.Marshal(n.Time.In(location))
 	}
 	return json.Marshal(nil)
 }
@@ -99,7 +172,7 @@ func (nt *Time) Scan(value interface{}) (err error) {
 	}
 
 	nt.Valid = false
-	return fmt.Errorf("Can't convert %T to time.Time", value)
+	return fmt.Errorf("can't convert %T to time.Time", value)
 }
 
 func (n Time) Value() (driver.Value, error) {

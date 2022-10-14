@@ -4,8 +4,12 @@ import (
 	"bytes"
 	"database/sql"
 	"database/sql/driver"
-	"encoding/json"
+	"fmt"
 	"reflect"
+	"strconv"
+	"unsafe"
+
+	jsoniter "github.com/json-iterator/go"
 )
 
 /* SQL and JSon null.Float64 */
@@ -17,6 +21,31 @@ func NewFloat64(f float64) Float64 {
 	nf.Valid = true
 	nf.Float64 = f
 	return nf
+}
+
+func (nf *Float64) Encode(ptr unsafe.Pointer, stream *jsoniter.Stream) {
+	val := (*float64)(ptr)
+	stream.WriteVal(val)
+}
+
+// IsEmpty detect whether primitive.ObjectID is empty.
+func (nf *Float64) IsEmpty(ptr unsafe.Pointer) bool {
+	val := (*Float64)(ptr)
+	return !val.Valid
+}
+
+func (nf *Float64) UnmarshalCSV(b string) error {
+	var err error
+	nf.Float64, err = strconv.ParseFloat(b, 64)
+	return err
+}
+
+// MarshalCSV marshals CSV
+func (nf Float64) MarshalCSV() (string, error) {
+	if nf.Valid {
+		return fmt.Sprintf("%f", nf.Float64), nil
+	}
+	return "", nil
 }
 
 func (nf *Float64) UnmarshalJSON(b []byte) error {

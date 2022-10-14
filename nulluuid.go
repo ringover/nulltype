@@ -3,10 +3,11 @@ package nulltype
 import (
 	"bytes"
 	"database/sql/driver"
-	"encoding/json"
 	"fmt"
+	"unsafe"
 
 	"github.com/google/uuid"
+	jsoniter "github.com/json-iterator/go"
 )
 
 type UUID struct {
@@ -23,9 +24,34 @@ func NewUUID(u uuid.UUID) UUID {
 	return n
 }
 
+func (n *UUID) Encode(ptr unsafe.Pointer, stream *jsoniter.Stream) {
+	val := (*uuid.UUID)(ptr)
+	stream.WriteVal(val)
+}
+
+// IsEmpty detect whether primitive.ObjectID is empty.
+func (n *UUID) IsEmpty(ptr unsafe.Pointer) bool {
+	val := (*UUID)(ptr)
+	return !val.Valid
+}
+
+func (n *UUID) UnmarshalCSV(b string) error {
+	var err error
+	n.UUID, err = uuid.FromBytes([]byte(b))
+	return err
+}
+
+// MarshalCSV marshals CSV
+func (n *UUID) MarshalCSV() (string, error) {
+	if n.Valid {
+		return n.UUID.String(), nil
+	}
+	return "", nil
+}
+
 func (n *UUID) UnmarshalJSON(b []byte) error {
 	var u uuid.UUID
-	if bytes.Compare(b, []byte("null")) == 0 {
+	if bytes.Equal(b, []byte("null")) {
 		n.Valid = false
 		return nil
 	}
@@ -57,8 +83,13 @@ func (n *UUID) Scan(value interface{}) (err error) {
 		n.UUID, n.Valid = v, true
 		return
 	case []byte:
-		n.UUID, err = uuid.ParseBytes(v)
-		n.Valid = true
+		if len(v) == 16 {
+			n.UUID, err = uuid.FromBytes(v)
+			n.Valid = true
+		} else {
+			n.UUID, err = uuid.ParseBytes(v)
+			n.Valid = true
+		}
 		return
 	case string:
 		n.UUID, err = uuid.Parse(v)
@@ -67,12 +98,12 @@ func (n *UUID) Scan(value interface{}) (err error) {
 	}
 
 	n.Valid = false
-	return fmt.Errorf("Can't convert %T to uuid.UUID", value)
+	return fmt.Errorf("can't convert %T to uuid.UUID", value)
 }
 
 func (n UUID) Value() (driver.Value, error) {
 	if !n.Valid {
 		return nil, nil
 	}
-	return n.UUID, nil
+	return n.UUID.MarshalBinary, nil
 }
