@@ -105,5 +105,5 @@ func (n UUID) Value() (driver.Value, error) {
 	if !n.Valid {
 		return nil, nil
 	}
-	return n.UUID.MarshalBinary, nil
+	return n.UUID.MarshalBinary()
 }
