@@ -7,6 +7,13 @@ NullType implements the sql.Scanner, json.Unmarshaler and json.Marshaler interfa
  * time.Time
  * string
  * int64
+ * int32
+ * int16
+ * int8
+ * uint64
+ * uint32
+ * uint16
+ * uint8
  * bool
  * float64
  * uuid.UUID
