@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"database/sql"
 	"database/sql/driver"
-	"reflect"
 	"strconv"
 	"unsafe"
 
@@ -68,20 +67,13 @@ func (ni Int64) MarshalJSON() ([]byte, error) {
 	return json.Marshal(nil)
 }
 
-func (ni *Int64) Scan(value interface{}) error {
-	var i sql.NullInt64
-	if err := i.Scan(value); err != nil {
-		return err
+func (ni *Int64) Scan(value any) error {
+	if value == nil {
+		ni.Int64, ni.Valid = 0, false
+		return nil
 	}
-
-	// if nil then make Valid false
-	if reflect.TypeOf(value) == nil {
-		*ni = Int64{i.Int64, false}
-	} else {
-		*ni = Int64{i.Int64, true}
-	}
-
-	return nil
+	ni.Valid = true
+	return convertAssignRows(&ni.Int64, value)
 }
 
 func (ni Int64) Value() (driver.Value, error) {

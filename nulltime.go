@@ -158,6 +158,9 @@ func (nt *Time) Scan(value interface{}) (err error) {
 	}
 
 	switch v := value.(type) {
+	case *time.Time:
+		nt.Time, nt.Valid = *v, true
+		return
 	case time.Time:
 		nt.Time, nt.Valid = v, true
 		return
@@ -173,6 +176,8 @@ func (nt *Time) Scan(value interface{}) (err error) {
 
 	nt.Valid = false
 	return fmt.Errorf("can't convert %T to time.Time", value)
+	//nt.Valid = true
+	//return convertAssignRows(&nt.Time, value)
 }
 
 func (n Time) Value() (driver.Value, error) {
