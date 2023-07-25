@@ -25,8 +25,13 @@ func NewUUID(u uuid.UUID) UUID {
 }
 
 func (n *UUID) Encode(ptr unsafe.Pointer, stream *jsoniter.Stream) {
-	val := (*uuid.UUID)(ptr)
-	stream.WriteVal(val)
+	val := (*UUID)(ptr)
+
+	if val.Valid {
+		stream.WriteVal(val.UUID)
+	} else {
+		stream.Write(nil)
+	}
 }
 
 // IsEmpty detect whether primitive.ObjectID is empty.
