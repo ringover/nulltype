@@ -30,7 +30,7 @@ func (n *UUID) Encode(ptr unsafe.Pointer, stream *jsoniter.Stream) {
 	if val.Valid {
 		stream.WriteVal(val.UUID)
 	} else {
-		stream.Write(nil)
+		stream.WriteVal(nil)
 	}
 }
 
