@@ -22,8 +22,13 @@ func NewString(str string) String {
 }
 
 func (ns *String) Encode(ptr unsafe.Pointer, stream *jsoniter.Stream) {
-	val := (*string)(ptr)
-	stream.WriteVal(val)
+	val := (*String)(ptr)
+
+	if val.Valid {
+		stream.WriteVal(val.String)
+	} else {
+		stream.WriteVal(nil)
+	}
 }
 
 // IsEmpty detect whether primitive.ObjectID is empty.

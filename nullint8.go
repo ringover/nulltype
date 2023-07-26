@@ -24,8 +24,13 @@ func NewInt8(i int8) Int8 {
 }
 
 func (ni *Int8) Encode(ptr unsafe.Pointer, stream *jsoniter.Stream) {
-	val := (*int8)(ptr)
-	stream.WriteVal(val)
+	val := (*Int8)(ptr)
+
+	if val.Valid {
+		stream.WriteVal(val.Int8)
+	} else {
+		stream.WriteVal(nil)
+	}
 }
 
 // IsEmpty detect whether primitive.ObjectID is empty.

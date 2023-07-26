@@ -22,8 +22,13 @@ func NewInt16(i int16) Int16 {
 }
 
 func (ni *Int16) Encode(ptr unsafe.Pointer, stream *jsoniter.Stream) {
-	val := (*int16)(ptr)
-	stream.WriteVal(val)
+	val := (*Int16)(ptr)
+
+	if val.Valid {
+		stream.WriteVal(val.Int16)
+	} else {
+		stream.WriteVal(nil)
+	}
 }
 
 // IsEmpty detect whether primitive.ObjectID is empty.

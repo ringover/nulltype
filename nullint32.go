@@ -22,8 +22,13 @@ func NewInt32(i int32) Int32 {
 }
 
 func (ni *Int32) Encode(ptr unsafe.Pointer, stream *jsoniter.Stream) {
-	val := (*int32)(ptr)
-	stream.WriteVal(val)
+	val := (*Int32)(ptr)
+
+	if val.Valid {
+		stream.WriteVal(val.Int32)
+	} else {
+		stream.WriteVal(nil)
+	}
 }
 
 // IsEmpty detect whether primitive.ObjectID is empty.

@@ -24,8 +24,13 @@ func NewFloat64(f float64) Float64 {
 }
 
 func (nf *Float64) Encode(ptr unsafe.Pointer, stream *jsoniter.Stream) {
-	val := (*float64)(ptr)
-	stream.WriteVal(val)
+	val := (*Float64)(ptr)
+
+	if val.Valid {
+		stream.WriteVal(val.Float64)
+	} else {
+		stream.WriteVal(nil)
+	}
 }
 
 // IsEmpty detect whether primitive.ObjectID is empty.

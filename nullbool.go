@@ -25,8 +25,14 @@ func NewBool(b bool) Bool {
 }
 
 func (nb *Bool) Encode(ptr unsafe.Pointer, stream *jsoniter.Stream) {
-	val := (*bool)(ptr)
-	stream.WriteVal(val)
+	val := (*Bool)(ptr)
+
+	if val.Valid {
+		stream.WriteVal(val.Bool)
+	} else {
+		stream.WriteVal(nil)
+	}
+
 }
 
 // IsEmpty detect whether primitive.ObjectID is empty.

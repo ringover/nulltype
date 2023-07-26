@@ -33,8 +33,14 @@ func NewTime(t time.Time) Time {
 }
 
 func (n *Time) Encode(ptr unsafe.Pointer, stream *jsoniter.Stream) {
-	val := (*time.Time)(ptr)
-	stream.WriteVal(val)
+	val := (*Time)(ptr)
+
+	if val.Valid {
+		stream.WriteVal(val.Time)
+	} else {
+		stream.WriteVal(nil)
+	}
+
 }
 
 // IsEmpty detect whether primitive.ObjectID is empty.
