@@ -186,6 +186,81 @@ func convertAssignRows(dest, src any) error {
 			*d = nil
 			return nil
 		}
+	case []uint32:
+		p := src.([]uint32)
+		switch d := dest.(type) {
+		case *[]uint32:
+			*d = make([]uint32, len(p), len(p))
+			for i := range p {
+				pi := (p)[i]
+				convertAssignRows(&(*d)[i], pi)
+			}
+			return nil
+		case *[]any:
+			*d = make([]any, len(p), len(p))
+			for i := range p {
+				pi := (p)[i]
+				convertAssignRows(&(*d)[i], pi)
+			}
+			return nil
+		}
+	case []*uint32:
+		p := src.([]*uint32)
+		switch d := dest.(type) {
+		case *[]uint32:
+			*d = make([]uint32, len(p), len(p))
+			for i := range p {
+				pi := (p)[i]
+				convertAssignRows(&(*d)[i], *pi)
+			}
+			return nil
+		case *[]any:
+			*d = make([]any, len(p), len(p))
+			for i := range p {
+				pi := (p)[i]
+				convertAssignRows(&(*d)[i], pi)
+			}
+			return nil
+		}
+	case []int64:
+		p := src.([]int64)
+		switch d := dest.(type) {
+		case *[]int64:
+			*d = make([]int64, len(p), len(p))
+			for i := range p {
+				pi := (p)[i]
+				convertAssignRows(&(*d)[i], pi)
+			}
+			return nil
+		case *[]any:
+			*d = make([]any, len(p), len(p))
+			for i := range p {
+				pi := (p)[i]
+				convertAssignRows(&(*d)[i], pi)
+			}
+			return nil
+		}
+	case []*int64:
+		p := src.([]*int64)
+		switch d := dest.(type) {
+		case *[]int64:
+			*d = make([]int64, len(p), len(p))
+			for i := range p {
+				pi := (p)[i]
+				convertAssignRows(&(*d)[i], pi)
+			}
+			return nil
+		case *[]any:
+			*d = make([]any, len(p), len(p))
+			for i := range p {
+				pi := (p)[i]
+				convertAssignRows(&(*d)[i], pi)
+			}
+			return nil
+		}
+	case *string:
+		p := src.(*string)
+		return convertAssignRows(dest, *p)
 	case *int8:
 		p := src.(*int8)
 		return convertAssignRows(dest, *p)

@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"database/sql"
 	"database/sql/driver"
-	"reflect"
 	"unsafe"
 
 	jsoniter "github.com/json-iterator/go"
@@ -73,19 +72,12 @@ func (ns String) MarshalJSON() ([]byte, error) {
 }
 
 func (ns *String) Scan(value interface{}) error {
-	var s sql.NullString
-	if err := s.Scan(value); err != nil {
-		return err
+	if value == nil {
+		ns.String, ns.Valid = "", false
+		return nil
 	}
-
-	// if nil then make Valid false
-	if reflect.TypeOf(value) == nil {
-		*ns = String{s.String, false}
-	} else {
-		*ns = String{s.String, true}
-	}
-
-	return nil
+	ns.Valid = true
+	return convertAssignRows(&ns.String, value)
 }
 
 func (ns String) Value() (driver.Value, error) {
