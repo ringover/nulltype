@@ -43,7 +43,7 @@ func (ni *ArrString) IsEmpty(ptr unsafe.Pointer) bool {
 }
 
 func (ni *ArrString) UnmarshalCSV(b string) error {
-	var i []T
+	var i []string
 	if err := json.Unmarshal([]byte(b), &i); err != nil {
 		return err
 	}
@@ -66,7 +66,7 @@ func (ni ArrString) MarshalCSV() (string, error) {
 }
 
 func (ni *ArrString) UnmarshalJSON(b []byte) error {
-	var i []T
+	var i []string
 	if err := json.Unmarshal([]byte(b), &i); err != nil {
 		return err
 	}
