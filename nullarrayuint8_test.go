@@ -113,6 +113,25 @@ func testScanArrayUint8NotNull(t *testing.T) {
 	if v.Valid == false {
 		t.Fatal(err)
 	}
+	if reflect.DeepEqual(v.Array, []uint8{0, 0, 0}) == true {
+		t.Fatal("Array is not equal")
+	}
+	t.Logf("%+v", v)
+}
+
+func testScanArrayPointerUint8NotNull(t *testing.T) {
+	v := ArrayUint[uint8]{}
+	tmp := []uint8{123, 124, 125}
+	err := v.Scan([]*uint8{&tmp[0], &tmp[1], &tmp[2]})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if v.Valid == false {
+		t.Fatal(err)
+	}
+	if reflect.DeepEqual(v.Array, []uint8{0, 0, 0}) == true {
+		t.Fatal("Array is not equal")
+	}
 	t.Logf("%+v", v)
 }
 
@@ -178,4 +197,6 @@ func TestNullArrayUint(t *testing.T) {
 	t.Run("testValueArrayUint8NotNull", testValueArrayUint8NotNull)
 	t.Run("testValueArrayUint8NotNullInStruct", testValueArrayUint8NotNullInStruct)
 	t.Run("testUnmarshalJSONWithArrayUint8NotNullMustFailed", testUnmarshalJSONWithArrayUint8NotNullMustFailed)
+	t.Run("testScanArrayPointerUint8NotNull", testScanArrayPointerUint8NotNull)
+
 }

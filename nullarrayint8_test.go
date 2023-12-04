@@ -98,6 +98,25 @@ func testScanArrayInt8NotNull(t *testing.T) {
 	if v.Valid == false {
 		t.Fatal(err)
 	}
+	if reflect.DeepEqual(v.Array, []int8{0, 0, 0}) == true {
+		t.Fatal("Array is not equal")
+	}
+	t.Logf("%+v", v)
+}
+
+func testScanArrayPointerInt8NotNull(t *testing.T) {
+	v := ArrayInt[int8]{}
+	tmp := []int8{123, -124, 125}
+	err := v.Scan([]*int8{&tmp[0], &tmp[1], &tmp[2]})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if v.Valid == false {
+		t.Fatal(err)
+	}
+	if reflect.DeepEqual(v.Array, []int8{0, 0, 0}) == true {
+		t.Fatal("Array is not equal")
+	}
 	t.Logf("%+v", v)
 }
 
@@ -124,7 +143,7 @@ func testValueArrayInt8NotNull(t *testing.T) {
 	if v.Valid == false {
 		t.Fatal(err)
 	}
-	t.Logf("%d", value)
+	t.Logf("Pointer %d", value)
 }
 
 func testValueArrayInt8NotNullInStruct(t *testing.T) {
@@ -162,4 +181,5 @@ func TestNullArrayInt(t *testing.T) {
 	t.Run("testValueArrayInt8Null", testValueArrayInt8Null)
 	t.Run("testValueArrayInt8NotNull", testValueArrayInt8NotNull)
 	t.Run("testValueArrayInt8NotNullInStruct", testValueArrayInt8NotNullInStruct)
+	t.Run("testScanArrayPointerInt8NotNull", testScanArrayPointerInt8NotNull)
 }

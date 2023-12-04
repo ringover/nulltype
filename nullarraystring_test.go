@@ -98,6 +98,25 @@ func testScanArrayStringNotNull(t *testing.T) {
 	if v.Valid == false {
 		t.Fatal(err)
 	}
+	if reflect.DeepEqual(v.Array, []string{"", "", ""}) == true {
+		t.Fatal("Array is not equal")
+	}
+	t.Logf("%+v", v)
+}
+
+func testScanArrayPointerStringNotNull(t *testing.T) {
+	v := ArrayString{}
+	tmp := []string{"pomme", "banane", "poire"}
+	err := v.Scan([]*string{&tmp[0], &tmp[1], &tmp[2]})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if v.Valid == false {
+		t.Fatal(err)
+	}
+	if reflect.DeepEqual(v.Array, []string{"", "", ""}) == true {
+		t.Fatal("Array is not equal")
+	}
 	t.Logf("%+v", v)
 }
 
@@ -162,4 +181,5 @@ func TestNullArrayString(t *testing.T) {
 	t.Run("testValueArrayStringNull", testValueArrayStringNull)
 	t.Run("testValueArrayStringNotNull", testValueArrayStringNotNull)
 	t.Run("testValueArrayStringNotNullInStruct", testValueArrayStringNotNullInStruct)
+	t.Run("testScanArrayPointerStringNotNull", testScanArrayPointerStringNotNull)
 }

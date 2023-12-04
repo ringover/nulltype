@@ -89,6 +89,22 @@ func testScanArrayInt32Null(t *testing.T) {
 	t.Logf("%+v", v)
 }
 
+func testScanArrayPointerInt32NotNull(t *testing.T) {
+	v := ArrayInt[int32]{}
+	tmp := []int32{123, -124, 125}
+	err := v.Scan([]*int32{&tmp[0], &tmp[1], &tmp[2]})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if v.Valid == false {
+		t.Fatal(err)
+	}
+	if reflect.DeepEqual(v.Array, []int32{0, 0, 0}) == true {
+		t.Fatal("Array is not equal")
+	}
+	t.Logf("here %+v", v)
+}
+
 func testScanArrayInt32NotNull(t *testing.T) {
 	v := ArrayInt[int32]{}
 	err := v.Scan([]int32{123, -124, 125})
@@ -98,7 +114,10 @@ func testScanArrayInt32NotNull(t *testing.T) {
 	if v.Valid == false {
 		t.Fatal(err)
 	}
-	t.Logf("%+v", v)
+	if reflect.DeepEqual(v.Array, []int32{0, 0, 0}) == true {
+		t.Fatal("Array is not equal")
+	}
+	t.Logf("here %+v", v)
 }
 
 func testValueArrayInt32Null(t *testing.T) {
@@ -162,4 +181,5 @@ func TestNullArrayInt32(t *testing.T) {
 	t.Run("testValueArrayInt32Null", testValueArrayInt32Null)
 	t.Run("testValueArrayInt32NotNull", testValueArrayInt32NotNull)
 	t.Run("testValueArrayInt32NotNullInStruct", testValueArrayInt32NotNullInStruct)
+	t.Run("testScanArrayPointerInt32NotNull", testScanArrayPointerInt32NotNull)
 }

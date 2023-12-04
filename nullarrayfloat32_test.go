@@ -101,6 +101,22 @@ func testScanArrayFloat32NotNull(t *testing.T) {
 	t.Logf("%+v", v)
 }
 
+func testScanArrayPointerFloat32NotNull(t *testing.T) {
+	v := ArrayFloat[float32]{}
+	tmp := []float32{123.123, -124.124, 125.125}
+	err := v.Scan([]*float32{&tmp[0], &tmp[1], &tmp[2]})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if v.Valid == false {
+		t.Fatal(err)
+	}
+	if reflect.DeepEqual(v.Array, []float32{0.0, 0.0, 0.0}) == true {
+		t.Fatal("Array is not equal")
+	}
+	t.Logf("%+v", v)
+}
+
 func testValueArrayFloat32Null(t *testing.T) {
 	v := ArrayFloat[float32]{}
 	v.Valid = false
@@ -162,4 +178,5 @@ func TestNullArrayFloat32(t *testing.T) {
 	t.Run("testValueArrayFloat32Null", testValueArrayFloat32Null)
 	t.Run("testValueArrayFloat32NotNull", testValueArrayFloat32NotNull)
 	t.Run("testValueArrayFloat32NotNullInStruct", testValueArrayFloat32NotNullInStruct)
+	t.Run("testScanArrayPointerFloat32NotNull", testScanArrayPointerFloat32NotNull)
 }

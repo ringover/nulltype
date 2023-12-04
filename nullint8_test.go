@@ -1,6 +1,7 @@
 package nulltype
 
 import (
+	"log"
 	"reflect"
 	"strings"
 	"testing"
@@ -91,12 +92,31 @@ func testScanInt8Null(t *testing.T) {
 
 func testScanInt8NotNull(t *testing.T) {
 	v := Int8{}
-	err := v.Scan(0)
+	err := v.Scan(123)
 	if err != nil {
 		t.Fatal(err)
 	}
 	if v.Valid == false {
 		t.Fatal(err)
+	}
+	if v.Int8 == 0 {
+		log.Fatal("Value not equal")
+	}
+	t.Logf("%+v", v)
+}
+
+func testScanPointerInt8NotNull(t *testing.T) {
+	v := Int8{}
+	i := int8(123)
+	err := v.Scan(&i)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if v.Valid == false {
+		t.Fatal(err)
+	}
+	if v.Int8 == 0 {
+		log.Fatal("Value not equal")
 	}
 	t.Logf("%+v", v)
 }
@@ -162,4 +182,5 @@ func TestNullInt8(t *testing.T) {
 	t.Run("testValueInt8Null", testValueInt8Null)
 	t.Run("testValueInt8NotNull", testValueInt8NotNull)
 	t.Run("testValueInt8NotNull", testValueInt8NotNullInStruct)
+	t.Run("testScanPointerInt8NotNull", testScanPointerInt8NotNull)
 }

@@ -89,6 +89,22 @@ func testScanArrayInt64Null(t *testing.T) {
 	t.Logf("%+v", v)
 }
 
+func testScanArrayPointerInt64NotNull(t *testing.T) {
+	v := ArrayInt[int64]{}
+	tmp := []int64{123, -124, 125}
+	err := v.Scan([]*int64{&tmp[0], &tmp[1], &tmp[2]})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if v.Valid == false {
+		t.Fatal(err)
+	}
+	if reflect.DeepEqual(tmp, []int64{0, 0, 0}) == true {
+		t.Fatal("Array is not equal")
+	}
+	t.Logf("%+v", v)
+}
+
 func testScanArrayInt64NotNull(t *testing.T) {
 	v := ArrayInt[int64]{}
 	err := v.Scan([]int64{123, -124, 125})
@@ -97,6 +113,9 @@ func testScanArrayInt64NotNull(t *testing.T) {
 	}
 	if v.Valid == false {
 		t.Fatal(err)
+	}
+	if reflect.DeepEqual(v.Array, []int64{0, 0, 0}) == true {
+		t.Fatal("Array is not equal")
 	}
 	t.Logf("%+v", v)
 }
@@ -162,4 +181,5 @@ func TestNullArrayInt64(t *testing.T) {
 	t.Run("testValueArrayInt64Null", testValueArrayInt64Null)
 	t.Run("testValueArrayInt64NotNull", testValueArrayInt64NotNull)
 	t.Run("testValueArrayInt64NotNullInStruct", testValueArrayInt64NotNullInStruct)
+	t.Run("testScanArrayPointerInt64NotNull", testScanArrayPointerInt64NotNull)
 }

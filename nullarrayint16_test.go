@@ -89,6 +89,22 @@ func testScanArrayInt16Null(t *testing.T) {
 	t.Logf("%+v", v)
 }
 
+func testScanArrayPointerInt16NotNull(t *testing.T) {
+	v := ArrayInt[int16]{}
+	tmp := []int16{123, -124, 125}
+	err := v.Scan([]*int16{&tmp[0], &tmp[1], &tmp[2]})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if v.Valid == false {
+		t.Fatal(err)
+	}
+	if reflect.DeepEqual(v.Array, []int16{0, 0, 0}) == true {
+		t.Fatal("Array is not equal")
+	}
+	t.Logf("%+v", v)
+}
+
 func testScanArrayInt16NotNull(t *testing.T) {
 	v := ArrayInt[int16]{}
 	err := v.Scan([]int16{123, -124, 125})
@@ -97,6 +113,9 @@ func testScanArrayInt16NotNull(t *testing.T) {
 	}
 	if v.Valid == false {
 		t.Fatal(err)
+	}
+	if reflect.DeepEqual(v.Array, []int16{0, 0, 0}) == true {
+		t.Fatal("Array is not equal")
 	}
 	t.Logf("%+v", v)
 }
@@ -162,4 +181,5 @@ func TestNullArrayInt16(t *testing.T) {
 	t.Run("testValueArrayInt16Null", testValueArrayInt16Null)
 	t.Run("testValueArrayInt16NotNull", testValueArrayInt16NotNull)
 	t.Run("testValueArrayInt16NotNullInStruct", testValueArrayInt16NotNullInStruct)
+	t.Run("testScanArrayPointerInt16NotNull", testScanArrayPointerInt16NotNull)
 }

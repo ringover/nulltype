@@ -113,6 +113,25 @@ func testScanArrayUint32NotNull(t *testing.T) {
 	if v.Valid == false {
 		t.Fatal(err)
 	}
+	if reflect.DeepEqual(v.Array, []uint32{0, 0, 0}) == true {
+		t.Fatal("Array is not equal")
+	}
+	t.Logf("%+v", v)
+}
+
+func testScanArrayPointerUint32NotNull(t *testing.T) {
+	v := ArrayUint[uint32]{}
+	tmp := []uint32{123, 124, 125}
+	err := v.Scan([]*uint32{&tmp[0], &tmp[1], &tmp[2]})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if v.Valid == false {
+		t.Fatal(err)
+	}
+	if reflect.DeepEqual(v.Array, []uint32{0, 0, 0}) == true {
+		t.Fatal("Array is not equal")
+	}
 	t.Logf("%+v", v)
 }
 
@@ -178,4 +197,5 @@ func TestNullArrayUint32(t *testing.T) {
 	t.Run("testValueArrayUint32NotNull", testValueArrayUint32NotNull)
 	t.Run("testValueArrayUint32NotNullInStruct", testValueArrayUint32NotNullInStruct)
 	t.Run("testUnmarshalJSONWithArrayUint32NotNullMustFailed", testUnmarshalJSONWithArrayUint32NotNullMustFailed)
+	t.Run("testScanArrayPointerUint32NotNull", testScanArrayPointerUint32NotNull)
 }

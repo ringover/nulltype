@@ -112,8 +112,17 @@ func convertAssignRows(dest, src any) error {
 			*d = append((*d)[:0], s...)
 			return nil
 		}
-	case []byte:
+	case []byte: // byte = uint8
+		p := src.([]byte)
 		switch d := dest.(type) {
+		case *[]any:
+			*d = make([]any, len(p))
+			for i := range p {
+				pi := (p)[i]
+				if err := convertAssignRows(&(*d)[i], pi); err != nil {
+					return err
+				}
+			}
 		case *string:
 			if d == nil {
 				return errNilPtr
@@ -186,21 +195,90 @@ func convertAssignRows(dest, src any) error {
 			*d = nil
 			return nil
 		}
+	case []*uint8: // for uint8 see byte
+		p := src.([]*uint8)
+		switch d := dest.(type) {
+		case *[]uint8:
+			*d = make([]uint8, len(p))
+			for i := range p {
+				pi := (p)[i]
+				if err := convertAssignRows(&(*d)[i], pi); err != nil {
+					return err
+				}
+			}
+			return nil
+		case *[]any:
+			*d = make([]any, len(p))
+			for i := range p {
+				pi := (p)[i]
+				if err := convertAssignRows(&(*d)[i], pi); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	case []uint16:
+		p := src.([]uint16)
+		switch d := dest.(type) {
+		case *[]uint16:
+			*d = make([]uint16, len(p))
+			for i := range p {
+				pi := (p)[i]
+				if err := convertAssignRows(&(*d)[i], pi); err != nil {
+					return err
+				}
+			}
+			return nil
+		case *[]any:
+			*d = make([]any, len(p))
+			for i := range p {
+				pi := (p)[i]
+				if err := convertAssignRows(&(*d)[i], pi); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	case []*uint16:
+		p := src.([]*uint16)
+		switch d := dest.(type) {
+		case *[]uint16:
+			fmt.Println("kikooo")
+			*d = make([]uint16, len(p))
+			for i := range p {
+				pi := (p)[i]
+				convertAssignRows(&(*d)[i], *pi)
+			}
+			return nil
+		case *[]any:
+			*d = make([]any, len(p))
+			for i := range p {
+				pi := (p)[i]
+				if err := convertAssignRows(&(*d)[i], pi); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
 	case []uint32:
 		p := src.([]uint32)
 		switch d := dest.(type) {
 		case *[]uint32:
-			*d = make([]uint32, len(p), len(p))
+			*d = make([]uint32, len(p))
 			for i := range p {
 				pi := (p)[i]
-				convertAssignRows(&(*d)[i], pi)
+				if err := convertAssignRows(&(*d)[i], pi); err != nil {
+					return err
+				}
 			}
 			return nil
 		case *[]any:
-			*d = make([]any, len(p), len(p))
+			*d = make([]any, len(p))
 			for i := range p {
 				pi := (p)[i]
-				convertAssignRows(&(*d)[i], pi)
+				if err := convertAssignRows(&(*d)[i], pi); err != nil {
+					return err
+				}
 			}
 			return nil
 		}
@@ -208,17 +286,193 @@ func convertAssignRows(dest, src any) error {
 		p := src.([]*uint32)
 		switch d := dest.(type) {
 		case *[]uint32:
-			*d = make([]uint32, len(p), len(p))
+			*d = make([]uint32, len(p))
 			for i := range p {
 				pi := (p)[i]
 				convertAssignRows(&(*d)[i], *pi)
 			}
 			return nil
 		case *[]any:
-			*d = make([]any, len(p), len(p))
+			*d = make([]any, len(p))
 			for i := range p {
 				pi := (p)[i]
-				convertAssignRows(&(*d)[i], pi)
+				if err := convertAssignRows(&(*d)[i], pi); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	case []uint64:
+		p := src.([]uint64)
+		switch d := dest.(type) {
+		case *[]uint64:
+			*d = make([]uint64, len(p))
+			for i := range p {
+				pi := (p)[i]
+				if err := convertAssignRows(&(*d)[i], pi); err != nil {
+					return err
+				}
+			}
+			return nil
+		case *[]any:
+			*d = make([]any, len(p))
+			for i := range p {
+				pi := (p)[i]
+				if err := convertAssignRows(&(*d)[i], pi); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	case []*uint64:
+		p := src.([]*uint64)
+		switch d := dest.(type) {
+		case *[]uint64:
+			*d = make([]uint64, len(p))
+			for i := range p {
+				pi := (p)[i]
+				convertAssignRows(&(*d)[i], *pi)
+			}
+			return nil
+		case *[]any:
+			*d = make([]any, len(p))
+			for i := range p {
+				pi := (p)[i]
+				if err := convertAssignRows(&(*d)[i], pi); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	case []int8:
+		p := src.([]int8)
+		switch d := dest.(type) {
+		case *[]int8:
+			*d = make([]int8, len(p))
+			for i := range p {
+				pi := (p)[i]
+				if err := convertAssignRows(&(*d)[i], pi); err != nil {
+					return err
+				}
+			}
+			return nil
+		case *[]any:
+			*d = make([]any, len(p))
+			for i := range p {
+				pi := (p)[i]
+				if err := convertAssignRows(&(*d)[i], pi); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	case []*int8:
+		p := src.([]*int8)
+		switch d := dest.(type) {
+		case *[]int8:
+			*d = make([]int8, len(p))
+			for i := range p {
+				pi := (p)[i]
+				if err := convertAssignRows(&(*d)[i], pi); err != nil {
+					return err
+				}
+			}
+			return nil
+		case *[]any:
+			*d = make([]any, len(p))
+			for i := range p {
+				pi := (p)[i]
+				if err := convertAssignRows(&(*d)[i], pi); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	case []int16:
+		p := src.([]int16)
+		switch d := dest.(type) {
+		case *[]int16:
+			*d = make([]int16, len(p))
+			for i := range p {
+				pi := (p)[i]
+				if err := convertAssignRows(&(*d)[i], pi); err != nil {
+					return err
+				}
+			}
+			return nil
+		case *[]any:
+			*d = make([]any, len(p))
+			for i := range p {
+				pi := (p)[i]
+				if err := convertAssignRows(&(*d)[i], pi); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	case []*int16:
+		p := src.([]*int16)
+		switch d := dest.(type) {
+		case *[]int16:
+			*d = make([]int16, len(p))
+			for i := range p {
+				pi := (p)[i]
+				if err := convertAssignRows(&(*d)[i], pi); err != nil {
+					return err
+				}
+			}
+			return nil
+		case *[]any:
+			*d = make([]any, len(p))
+			for i := range p {
+				pi := (p)[i]
+				if err := convertAssignRows(&(*d)[i], pi); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	case []int32:
+		p := src.([]int32)
+		switch d := dest.(type) {
+		case *[]int32:
+			*d = make([]int32, len(p))
+			for i := range p {
+				pi := (p)[i]
+				if err := convertAssignRows(&(*d)[i], pi); err != nil {
+					return err
+				}
+			}
+			return nil
+		case *[]any:
+			*d = make([]any, len(p))
+			for i := range p {
+				pi := (p)[i]
+				if err := convertAssignRows(&(*d)[i], pi); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	case []*int32:
+		p := src.([]*int32)
+		switch d := dest.(type) {
+		case *[]int32:
+			*d = make([]int32, len(p))
+			for i := range p {
+				pi := (p)[i]
+				if err := convertAssignRows(&(*d)[i], pi); err != nil {
+					return err
+				}
+			}
+			return nil
+		case *[]any:
+			*d = make([]any, len(p))
+			for i := range p {
+				pi := (p)[i]
+				if err := convertAssignRows(&(*d)[i], pi); err != nil {
+					return err
+				}
 			}
 			return nil
 		}
@@ -226,17 +480,21 @@ func convertAssignRows(dest, src any) error {
 		p := src.([]int64)
 		switch d := dest.(type) {
 		case *[]int64:
-			*d = make([]int64, len(p), len(p))
+			*d = make([]int64, len(p))
 			for i := range p {
 				pi := (p)[i]
-				convertAssignRows(&(*d)[i], pi)
+				if err := convertAssignRows(&(*d)[i], pi); err != nil {
+					return err
+				}
 			}
 			return nil
 		case *[]any:
-			*d = make([]any, len(p), len(p))
+			*d = make([]any, len(p))
 			for i := range p {
 				pi := (p)[i]
-				convertAssignRows(&(*d)[i], pi)
+				if err := convertAssignRows(&(*d)[i], pi); err != nil {
+					return err
+				}
 			}
 			return nil
 		}
@@ -244,17 +502,153 @@ func convertAssignRows(dest, src any) error {
 		p := src.([]*int64)
 		switch d := dest.(type) {
 		case *[]int64:
-			*d = make([]int64, len(p), len(p))
+			*d = make([]int64, len(p))
 			for i := range p {
 				pi := (p)[i]
-				convertAssignRows(&(*d)[i], pi)
+				if err := convertAssignRows(&(*d)[i], pi); err != nil {
+					return err
+				}
 			}
 			return nil
 		case *[]any:
-			*d = make([]any, len(p), len(p))
+			*d = make([]any, len(p))
 			for i := range p {
 				pi := (p)[i]
-				convertAssignRows(&(*d)[i], pi)
+				if err := convertAssignRows(&(*d)[i], pi); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	case []float32:
+		p := src.([]float32)
+		switch d := dest.(type) {
+		case *[]float32:
+			*d = make([]float32, len(p))
+			for i := range p {
+				pi := (p)[i]
+				if err := convertAssignRows(&(*d)[i], pi); err != nil {
+					return err
+				}
+			}
+			return nil
+		case *[]any:
+			*d = make([]any, len(p))
+			for i := range p {
+				pi := (p)[i]
+				if err := convertAssignRows(&(*d)[i], pi); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	case []*float32:
+		p := src.([]*float32)
+		switch d := dest.(type) {
+		case *[]float32:
+			*d = make([]float32, len(p))
+			for i := range p {
+				pi := (p)[i]
+				if err := convertAssignRows(&(*d)[i], pi); err != nil {
+					return err
+				}
+			}
+			return nil
+		case *[]any:
+			*d = make([]any, len(p))
+			for i := range p {
+				pi := (p)[i]
+				if err := convertAssignRows(&(*d)[i], pi); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	case []float64:
+		p := src.([]float64)
+		switch d := dest.(type) {
+		case *[]float64:
+			*d = make([]float64, len(p))
+			for i := range p {
+				pi := (p)[i]
+				if err := convertAssignRows(&(*d)[i], pi); err != nil {
+					return err
+				}
+			}
+			return nil
+		case *[]any:
+			*d = make([]any, len(p))
+			for i := range p {
+				pi := (p)[i]
+				if err := convertAssignRows(&(*d)[i], pi); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	case []*float64:
+		p := src.([]*float64)
+		switch d := dest.(type) {
+		case *[]float64:
+			*d = make([]float64, len(p))
+			for i := range p {
+				pi := (p)[i]
+				if err := convertAssignRows(&(*d)[i], pi); err != nil {
+					return err
+				}
+			}
+			return nil
+		case *[]any:
+			*d = make([]any, len(p))
+			for i := range p {
+				pi := (p)[i]
+				if err := convertAssignRows(&(*d)[i], pi); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	case []string:
+		p := src.([]string)
+		switch d := dest.(type) {
+		case *[]string:
+			*d = make([]string, len(p))
+			for i := range p {
+				pi := (p)[i]
+				if err := convertAssignRows(&(*d)[i], pi); err != nil {
+					return err
+				}
+			}
+			return nil
+		case *[]any:
+			*d = make([]any, len(p))
+			for i := range p {
+				pi := (p)[i]
+				if err := convertAssignRows(&(*d)[i], pi); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	case []*string:
+		p := src.([]*string)
+		switch d := dest.(type) {
+		case *[]string:
+			*d = make([]string, len(p))
+			for i := range p {
+				pi := (p)[i]
+				if err := convertAssignRows(&(*d)[i], pi); err != nil {
+					return err
+				}
+			}
+			return nil
+		case *[]any:
+			*d = make([]any, len(p))
+			for i := range p {
+				pi := (p)[i]
+				if err := convertAssignRows(&(*d)[i], pi); err != nil {
+					return err
+				}
 			}
 			return nil
 		}
@@ -284,6 +678,12 @@ func convertAssignRows(dest, src any) error {
 		return convertAssignRows(dest, *p)
 	case *uint64:
 		p := src.(*uint64)
+		return convertAssignRows(dest, *p)
+	case *float32:
+		p := src.(*float32)
+		return convertAssignRows(dest, *p)
+	case *float64:
+		p := src.(*float64)
 		return convertAssignRows(dest, *p)
 	case *time.Time:
 		p := src.(*time.Time)
