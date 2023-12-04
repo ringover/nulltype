@@ -1,33 +1,29 @@
 package nulltype
 
 import (
-	//	"bytes"
-	//	"database/sql"
 	"database/sql/driver"
 	"strings"
-
-	//	"strconv"
 	"unsafe"
 
 	jsoniter "github.com/json-iterator/go"
 )
 
-/* SQL and JSon null.ArrInt */
+/* SQL and JSon null.ArrayInt */
 
-type ArrInt[T int8 | int16 | int32 | int64] struct {
+type ArrayInt[T int8 | int16 | int32 | int64] struct {
 	Array []T
 	Valid bool
 }
 
-func NewArrInt[T int8 | int16 | int32 | int64](i []T) ArrInt[T] {
-	n := ArrInt[T]{}
+func NewArrayInt[T int8 | int16 | int32 | int64](i []T) ArrayInt[T] {
+	n := ArrayInt[T]{}
 	n.Valid = true
 	n.Array = i
 	return n
 }
 
-func (ni *ArrInt[T]) Encode(ptr unsafe.Pointer, stream *jsoniter.Stream) {
-	val := (*ArrInt[T])(ptr)
+func (ni *ArrayInt[T]) Encode(ptr unsafe.Pointer, stream *jsoniter.Stream) {
+	val := (*ArrayInt[T])(ptr)
 
 	if val.Valid {
 		stream.WriteVal(val.Array)
@@ -37,12 +33,12 @@ func (ni *ArrInt[T]) Encode(ptr unsafe.Pointer, stream *jsoniter.Stream) {
 }
 
 // IsEmpty detect whether primitive.ObjectID is empty.
-func (ni *ArrInt[T]) IsEmpty(ptr unsafe.Pointer) bool {
-	val := (*ArrInt[T])(ptr)
+func (ni *ArrayInt[T]) IsEmpty(ptr unsafe.Pointer) bool {
+	val := (*ArrayInt[T])(ptr)
 	return !val.Valid
 }
 
-func (ni *ArrInt[T]) UnmarshalCSV(b string) error {
+func (ni *ArrayInt[T]) UnmarshalCSV(b string) error {
 	var i []T
 	if err := json.Unmarshal([]byte(b), &i); err != nil {
 		return err
@@ -57,7 +53,7 @@ func (ni *ArrInt[T]) UnmarshalCSV(b string) error {
 }
 
 // MarshalCSV marshals CSV
-func (ni ArrInt[T]) MarshalCSV() (string, error) {
+func (ni ArrayInt[T]) MarshalCSV() (string, error) {
 	if ni.Valid {
 		b, err := json.Marshal(ni.Array)
 		return string(b), err
@@ -65,7 +61,7 @@ func (ni ArrInt[T]) MarshalCSV() (string, error) {
 	return "", nil
 }
 
-func (ni *ArrInt[T]) UnmarshalJSON(b []byte) error {
+func (ni *ArrayInt[T]) UnmarshalJSON(b []byte) error {
 	var i []T
 	if err := json.Unmarshal([]byte(b), &i); err != nil {
 		return err
@@ -80,14 +76,14 @@ func (ni *ArrInt[T]) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
-func (ni ArrInt[T]) MarshalJSON() ([]byte, error) {
+func (ni ArrayInt[T]) MarshalJSON() ([]byte, error) {
 	if ni.Valid {
 		return json.Marshal(ni.Array)
 	}
 	return json.Marshal(nil)
 }
 
-func (ni *ArrInt[T]) Scan(value any) error {
+func (ni *ArrayInt[T]) Scan(value any) error {
 	if value == nil {
 		ni.Array, ni.Valid = make([]T, 0), false
 		return nil
@@ -96,7 +92,7 @@ func (ni *ArrInt[T]) Scan(value any) error {
 	return convertAssignRows(&ni.Array, value)
 }
 
-func (ni ArrInt[T]) Value() (driver.Value, error) {
+func (ni ArrayInt[T]) Value() (driver.Value, error) {
 	if !ni.Valid {
 		return nil, nil
 	}

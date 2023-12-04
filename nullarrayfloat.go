@@ -3,28 +3,27 @@ package nulltype
 import (
 	"database/sql/driver"
 	"strings"
-
 	"unsafe"
 
 	jsoniter "github.com/json-iterator/go"
 )
 
-/* SQL and JSon null.ArrayUint */
+/* SQL and JSon null.ArrayFloat */
 
-type ArrayUint[T uint8 | uint16 | uint32 | uint64] struct {
+type ArrayFloat[T float32 | float64] struct {
 	Array []T
 	Valid bool
 }
 
-func NewArrayUint[T uint8 | uint16 | uint32 | uint64](i []T) ArrayUint[T] {
-	n := ArrayUint[T]{}
+func NewArrayFloat[T float32 | float64](i []T) ArrayFloat[T] {
+	n := ArrayFloat[T]{}
 	n.Valid = true
 	n.Array = i
 	return n
 }
 
-func (ni *ArrayUint[T]) Encode(ptr unsafe.Pointer, stream *jsoniter.Stream) {
-	val := (*ArrayUint[T])(ptr)
+func (ni *ArrayFloat[T]) Encode(ptr unsafe.Pointer, stream *jsoniter.Stream) {
+	val := (*ArrayFloat[T])(ptr)
 
 	if val.Valid {
 		stream.WriteVal(val.Array)
@@ -34,12 +33,12 @@ func (ni *ArrayUint[T]) Encode(ptr unsafe.Pointer, stream *jsoniter.Stream) {
 }
 
 // IsEmpty detect whether primitive.ObjectID is empty.
-func (ni *ArrayUint[T]) IsEmpty(ptr unsafe.Pointer) bool {
-	val := (*ArrayUint[T])(ptr)
+func (ni *ArrayFloat[T]) IsEmpty(ptr unsafe.Pointer) bool {
+	val := (*ArrayFloat[T])(ptr)
 	return !val.Valid
 }
 
-func (ni *ArrayUint[T]) UnmarshalCSV(b string) error {
+func (ni *ArrayFloat[T]) UnmarshalCSV(b string) error {
 	var i []T
 	if err := json.Unmarshal([]byte(b), &i); err != nil {
 		return err
@@ -54,7 +53,7 @@ func (ni *ArrayUint[T]) UnmarshalCSV(b string) error {
 }
 
 // MarshalCSV marshals CSV
-func (ni ArrayUint[T]) MarshalCSV() (string, error) {
+func (ni ArrayFloat[T]) MarshalCSV() (string, error) {
 	if ni.Valid {
 		b, err := json.Marshal(ni.Array)
 		return string(b), err
@@ -62,7 +61,7 @@ func (ni ArrayUint[T]) MarshalCSV() (string, error) {
 	return "", nil
 }
 
-func (ni *ArrayUint[T]) UnmarshalJSON(b []byte) error {
+func (ni *ArrayFloat[T]) UnmarshalJSON(b []byte) error {
 	var i []T
 	if err := json.Unmarshal([]byte(b), &i); err != nil {
 		return err
@@ -77,14 +76,14 @@ func (ni *ArrayUint[T]) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
-func (ni ArrayUint[T]) MarshalJSON() ([]byte, error) {
+func (ni ArrayFloat[T]) MarshalJSON() ([]byte, error) {
 	if ni.Valid {
 		return json.Marshal(ni.Array)
 	}
 	return json.Marshal(nil)
 }
 
-func (ni *ArrayUint[T]) Scan(value any) error {
+func (ni *ArrayFloat[T]) Scan(value any) error {
 	if value == nil {
 		ni.Array, ni.Valid = make([]T, 0), false
 		return nil
@@ -93,7 +92,7 @@ func (ni *ArrayUint[T]) Scan(value any) error {
 	return convertAssignRows(&ni.Array, value)
 }
 
-func (ni ArrayUint[T]) Value() (driver.Value, error) {
+func (ni ArrayFloat[T]) Value() (driver.Value, error) {
 	if !ni.Valid {
 		return nil, nil
 	}
