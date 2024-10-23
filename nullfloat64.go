@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"database/sql/driver"
 	"fmt"
-	"reflect"
 	"strconv"
 	"unsafe"
 
@@ -74,20 +73,13 @@ func (nf Float64) MarshalJSON() ([]byte, error) {
 	return json.Marshal(nil)
 }
 
-func (nf *Float64) Scan(value interface{}) error {
-	var f sql.NullFloat64
-	if err := f.Scan(value); err != nil {
-		return err
+func (nf *Float64) Scan(value any) error {
+	if value == nil {
+		nf.Float64, nf.Valid = 0, false
+		return nil
 	}
-
-	// if nil then make Valid false
-	if reflect.TypeOf(value) == nil {
-		*nf = Float64{f.Float64, false}
-	} else {
-		*nf = Float64{f.Float64, true}
-	}
-
-	return nil
+	nf.Valid = true
+	return convertAssignRows(&nf.Float64, value)
 }
 
 func (nf Float64) Value() (driver.Value, error) {
