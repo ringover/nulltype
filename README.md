@@ -17,6 +17,11 @@ NullType implements the sql.Scanner, json.Unmarshaler and json.Marshaler interfa
  * bool
  * float64
  * uuid.UUID
+ * ArrayInt [int8, int16, int32, int64]
+ * ArrayUint [uint8, uint16, uint32, uint64]
+ * ArrayFloat [float32, float64]
+ * ArrayString
+ * ArrayAny
 
 ## NullType and omitempty
 By default NullType struct are not empty.
