@@ -112,8 +112,8 @@ func (n *Time) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
-func (n Time) MarshalText() ([]byte, error) {
-	if n.Valid {
+func (n *Time) MarshalText() ([]byte, error) {
+	if n != nil && n.Valid {
 		location, err := time.LoadLocation(n.Timezone)
 		if err != nil {
 			location = time.UTC
@@ -123,8 +123,8 @@ func (n Time) MarshalText() ([]byte, error) {
 	return json.Marshal(nil)
 }
 
-func (n Time) MarshalJSON() ([]byte, error) {
-	if n.Valid {
+func (n *Time) MarshalJSON() ([]byte, error) {
+	if n != nil && n.Valid {
 		location, err := time.LoadLocation(n.Timezone)
 		if err != nil {
 			location = time.UTC
